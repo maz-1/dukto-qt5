@@ -29,14 +29,20 @@
 #include <QApplication>
 
 SystemTray::SystemTray(DuktoWindow& window, QObject* parent) :
-    QSystemTrayIcon(QIcon(":/dukto.png"), parent),
+    QSystemTrayIcon(parent),
     window(window)
 {
 #if defined(NOTIFY_LIBNOTIFY)
     notify_init ("Dukto");
 #endif
+    auto trayIcon = QIcon(":/dukto.png");
+#ifdef __APPLE__
+    trayIcon.setIsMask(true);
+#endif
+    this->setIcon(trayIcon);
+#ifndef __APPLE__
     connect(this, &SystemTray::activated, this, &SystemTray::on_activated);
-    
+#endif
     QMenu *trayMenu = new QMenu(&window);
     QAction *ShowHide = new QAction(QString("Show/Hide"), trayMenu);
     connect(ShowHide, &QAction::triggered, [=]() { on_activated(QSystemTrayIcon::Trigger); });

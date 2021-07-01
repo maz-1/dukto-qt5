@@ -151,7 +151,14 @@ If (APPLE)
     SET( MACOSX_BUNDLE_ICON_FILE dukto.icns )
     SET_SOURCE_FILES_PROPERTIES( "dukto.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
     target_sources(${PROJECT_NAME} PRIVATE ${MACOSX_BUNDLE_ICON_FILE})
-    set_property(TARGET ${PROJECT_NAME} PROPERTY MACOSX_BUNDLE 1)
+    #set_property(TARGET ${PROJECT_NAME} PROPERTY MACOSX_BUNDLE 1)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        OUTPUT_NAME "Dukto"
+        MACOSX_BUNDLE TRUE
+        MACOSX_RPATH TRUE
+        MACOSX_FRAMEWORK_IDENTIFIER msec.it.dukto
+        XCODE_ATTRIBUTE_EXECUTABLE_NAME "Dukto"
+    )
     find_library(CORE_SERVICES CoreServices REQUIRED)
     target_link_options(${PROJECT_NAME} PRIVATE "${CORE_SERVICES}/CoreServices.tbd")
 endif()
