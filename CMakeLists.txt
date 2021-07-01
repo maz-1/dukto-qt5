@@ -136,6 +136,13 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${DUKTO_LIBS} ${QT_LIBRARIES})
 
+# Retrieve the absolute path to qmake and then use that path to find
+# the binaries
+get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
+find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} Ws2_32 ole32 user32)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -161,6 +168,15 @@ If (APPLE)
     )
     find_library(CORE_SERVICES CoreServices REQUIRED)
     target_link_options(${PROJECT_NAME} PRIVATE "${CORE_SERVICES}/CoreServices.tbd")
+    if (MACDEPLOYQT_EXECUTABLE)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${MACDEPLOYQT_EXECUTABLE}"
+                "$<TARGET_FILE_DIR:${PROJECT_NAME}>/../.."
+                -qmldir="${CMAKE_CURRENT_SOURCE_DIR}/qml"
+                -always-overwrite
+            COMMENT "Running macdeployqt..."
+        )
+    endif()
 endif()
 
 if(UNIX AND NOT APPLE)
