@@ -123,10 +123,20 @@ if(USE_SINGLE_APP)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/modules/SingleApplication)
 endif()
 
-add_executable(${PROJECT_NAME}
-                ${DUKTO_HDR}
-                ${DUKTO_SRC}
-                ${DUKTO_RESOURCES})
+if(ANDROID)
+    add_library(${PROJECT_NAME} SHARED
+                    ${DUKTO_HDR}
+                    ${DUKTO_SRC}
+                    ${DUKTO_RESOURCES})
+    include(modules/qt-android-cmake/AddQtAndroidApk.cmake)
+    add_qt_android_apk(${PROJECT_NAME}_apk ${PROJECT_NAME})
+else()
+    add_executable(${PROJECT_NAME}
+                    ${DUKTO_HDR}
+                    ${DUKTO_SRC}
+                    ${DUKTO_RESOURCES})
+endif()
+
 
 if(USE_SINGLE_APP)
     add_dependencies(${PROJECT_NAME} SingleApplication)
@@ -144,6 +154,9 @@ find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 
 if(WIN32)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE True
+    )
     target_link_libraries(${PROJECT_NAME} Ws2_32 ole32 user32)
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         # Visual Studio C++
