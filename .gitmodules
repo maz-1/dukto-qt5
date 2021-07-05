@@ -1,3 +1,6 @@
 [submodule "modules/SingleApplication"]
 	path = modules/SingleApplication
 	url = https://github.com/itay-grudev/SingleApplication.git
+[submodule "modules/qt-android-cmake"]
+	path = modules/qt-android-cmake
+	url = https://github.com/LaurentGomila/qt-android-cmake

@@ -26,10 +26,10 @@
 #include "duktowindow.h"
 
 #ifdef SINGLE_APP
-#include <singleapplication.h>
-#ifdef Q_OS_WIN
-#include <windows.h>
-#endif
+    #include <singleapplication.h>
+    #ifdef Q_OS_WIN
+        #include <windows.h>
+    #endif
 #endif
 
 int main(int argc, char *argv[])
@@ -40,6 +40,8 @@ int main(int argc, char *argv[])
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     qputenv("QSG_RHI_BACKEND", "gl");
 #endif
+
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 #ifndef SINGLE_APP
     QApplication app(argc, argv);
@@ -54,7 +56,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 #endif
-    
+
     QCommandLineParser parser;
     parser.setApplicationDescription("Dukto is a simple, fast and multi-platform file transfer tool for LAN users.");
     parser.addHelpOption();
@@ -66,11 +68,12 @@ int main(int argc, char *argv[])
 
     GuiBehind gb(&settings);
     app.installEventFilter(&gb);
-    
+
     DuktoWindow viewer(&gb, &settings);
 #ifdef SINGLE_APP
     QObject::connect(&app, &SingleApplication::receivedMessage, [&viewer]()->void {
-        if (viewer.isMinimized()) {
+        if (viewer.isMinimized())
+        {
             viewer.showNormal();
         }
         viewer.activateWindow();
@@ -82,6 +85,6 @@ int main(int argc, char *argv[])
 
     gb.setViewer(&viewer, &tray);
     viewer.setVisible(!parser.isSet(hideOption));
-    
+
     return app.exec();
 }
